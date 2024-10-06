@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistor Color Code Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('your-background-image.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 1;
+        }
+        .container:hover {
+            transform: scale(1.02);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid #007bff;
+            animation: typing 3s steps(30, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #007bff; }
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+        select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid #007bff;
+            animation: typing 3s steps(10, end) forwards;
+            opacity: 0;
+        }
+        .result.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resistor Color Code Calculator</h1>
+        <form id="colorForm">
+            <div class="form-group">
+                <label for="band1">Select Band 1 Color</label>
+                <select id="band1" required>
+                    <option value="black">Black</option>
+                    <option value="brown">Brown</option>
+                    <option value="red">Red</option>
+                    <option value="orange">Orange</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="violet">Violet</option>
+                    <option value="grey">Grey</option>
+                    <option value="white">White</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="band2">Select Band 2 Color</label>
+                <select id="band2" required>
+                    <option value="black">Black</option>
+                    <option value="brown">Brown</option>
+                    <option value="red">Red</option>
+                    <option value="orange">Orange</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="violet">Violet</option>
+                    <option value="grey">Grey</option>
+                    <option value="white">White</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="band3">Select Band 3 Color</label>
+                <select id="band3" required>
+                    <option value="black">Black</option>
+                    <option value="brown">Brown</option>
+                    <option value="red">Red</option>
+                    <option value="orange">Orange</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="violet">Violet</option>
+                    <option value="grey">Grey</option>
+                    <option value="white">White</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tolerance">Select Tolerance Color</label>
+                <select id="tolerance" required>
+                    <option value="gold">Gold</option>
+                    <option value="silver">Silver</option>
+                    <option value="brown">Brown</option>
+                    <option value="red">Red</option>
+                </select>
+            </div>
+            <button type="button" onclick="calculateResistance()">Calculate</button>
+        </form>
+        <div class="result" id="resultSection"></div>
+    </div>
+
+    <script>
+        const colorCodes = {
+            black: { value: 0, multiplier: 1 },
+            brown: { value: 1, multiplier: 10 },
+            red: { value: 2, multiplier: 100 },
+            orange: { value: 3, multiplier: 1000 },
+            yellow: { value: 4, multiplier: 10000 },
+            green: { value: 5, multiplier: 100000 },
+            blue: { value: 6, multiplier: 1000000 },
+            violet: { value: 7, multiplier: 10000000 },
+            grey: { value: 8, multiplier: 100000000 },
+            white: { value: 9, multiplier: 1000000000 },
+            gold: { tolerance: "±5%" },
+            silver: { tolerance: "±10%" },
+            red: { tolerance: "±2%" },
+            brown: { tolerance: "±1%" },
+        };
+
+        function calculateResistance() {
+            const band1 = document.getElementById('band1').value;
+            const band2 = document.getElementById('band2').value;
+            const band3 = document.getElementById('band3').value;
+            const tolerance = document.getElementById('tolerance').value;
+
+            const firstDigit = colorCodes[band1].value;
+            const secondDigit = colorCodes[band2].value;
+            const multiplier = colorCodes[band3].multiplier;
+            const toleranceValue = colorCodes[tolerance].tolerance;
+
+            const resistanceValue = (firstDigit * 10 + secondDigit) * multiplier;
+
+            const resultSection = document.getElementById('resultSection');
+            resultSection.innerHTML = `Resistance: ${resistanceValue} Ohms <br> Tolerance: ${toleranceValue}`;
+            resultSection.classList.add('show');
+        }
+    </script>
+</body>
+</html>

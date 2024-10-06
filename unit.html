@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronic Unit Converter</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('your-background-image.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            filter: blur(0.5px); /* Optional: add a blur effect */
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+            border-radius: 15px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 1; /* Ensure it appears above the background */
+        }
+        .container:hover {
+            transform: scale(1.02);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid #007bff;
+            animation: typing 4s steps(30, end), blink-caret .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #007bff; }
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus, select:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 30px;
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: .15em solid #007bff;
+            animation: typing 3s steps(10, end) forwards;
+            opacity: 0;
+        }
+        .result.show {
+            opacity: 1;
+        }
+        .result:hover {
+            background-color: #e0e0e0;
+        }
+        .conditional-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Electronic Unit Converter</h1>
+        <form id="converterForm">
+            <div class="form-group">
+                <label for="conversion_type">Select Conversion Type</label>
+                <select name="conversion_type" id="conversion_type" required onchange="updateInputFields()">
+                    <option value="voltage">Voltage (V = I × R)</option>
+                    <option value="current">Current (I = V ÷ R)</option>
+                    <option value="resistance">Resistance (R = V ÷ I)</option>
+                    <option value="power">Power (P = V × I)</option>
+                    <option value="capacitance">Capacitance (C = Q/V)</option>
+                    <option value="inductance">Inductance (L = V/(di/dt))</option>
+                    <option value="charge">Charge (Q = I × t)</option>
+                    <option value="frequency">Frequency (f = 1/T)</option>
+                    <option value="energy">Energy (E = P × t)</option>
+                    <option value="impedance">Impedance (Z = √(R² + (XL - XC)²))</option>
+                    <option value="conductance">Conductance (G = 1/R)</option>
+                    <option value="magnetic_flux">Magnetic Flux (Φ = B × A)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="input1">Input 1 (First Value)</label>
+                <input type="number" name="input1" id="input1" step="any" required>
+            </div>
+            <div class="form-group">
+                <label for="input2">Input 2 (Second Value)</label>
+                <input type="number" name="input2" id="input2" step="any" required>
+            </div>
+            <div class="form-group conditional-input" id="conditionalInputGroup">
+                <label for="input3">Input 3 (Third Value, if needed)</label>
+                <input type="number" name="input3" id="input3" step="any">
+            </div>
+            <button type="button" onclick="calculate()">Calculate</button>
+        </form>
+
+        <!-- Display the result -->
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function updateInputFields() {
+            const conversionType = document.getElementById('conversion_type').value;
+            const conditionalInputGroup = document.getElementById('conditionalInputGroup');
+            // Show third input field if the selected conversion type requires it
+            if (conversionType === 'inductance' || conversionType === 'impedance') {
+                conditionalInputGroup.style.display = 'block';
+            } else {
+                conditionalInputGroup.style.display = 'none';
+                document.getElementById('input3').value = ''; // Clear the third input if hidden
+            }
+        }
+
+        function calculate() {
+            const conversionType = document.getElementById('conversion_type').value;
+            const input1 = parseFloat(document.getElementById('input1').value);
+            const input2 = parseFloat(document.getElementById('input2').value);
+            const input3 = parseFloat(document.getElementById('input3').value);
+            let result;
+
+            switch (conversionType) {
+                case 'voltage':
+                    result = input1 * input2; // V = I × R
+                    break;
+                case 'current':
+                    result = input1 / input2; // I = V ÷ R
+                    break;
+                case 'resistance':
+                    result = input1 / input2; // R = V ÷ I
+                    break;
+                case 'power':
+                    result = input1 * input2; // P = V × I
+                    break;
+                case 'capacitance':
+                    result = input1 / input2; // C = Q/V
+                    break;
+                case 'inductance':
+                    result = input1 / (input2 * 0.001); // L = V/(di/dt)
+                    break;
+                case 'charge':
+                    result = input1 * input2; // Q = I × t
+                    break;
+                case 'frequency':
+                    result = 1 / input1; // f = 1/T
+                    break;
+                case 'energy':
+                    result = input1 * input2; // E = P × t
+                    break;
+                case 'impedance':
+                    result = Math.sqrt(Math.pow(input1, 2) + Math.pow(input2, 2)); // Z = √(R² + (XL - XC)²)
+                    break;
+                case 'conductance':
+                    result = 1 / input1; // G = 1/R
+                    break;
+                case 'magnetic_flux':
+                    result = input1 * input2; // Φ = B × A
+                    break;
+                default:
+                    result = 'Invalid conversion type';
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerText = `Result: ${result}`;
+            resultDiv.classList.add('show');
+            setTimeout(() => {
+                resultDiv.classList.remove('show');
+            }, 5000); // Show result for 5 seconds
+        }
+    </script>
+</body>
+</html>
